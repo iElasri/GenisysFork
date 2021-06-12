@@ -8,13 +8,7 @@ import pyfiglet
 import os
 import datetime
 from colorama import init, Fore
-from telethon.tl.types import UserStatusRecently
-from telethon.tl.types import ChannelParticipantsAdmins
-from telethon import functions, types
-import socks
-from telethon.tl.functions.account import GetAuthorizationsRequest
-import asyncio
-
+from telethon.tl.types import UserStatusRecently, ChannelParticipantsAdmins
 
 init()
 
@@ -30,7 +24,6 @@ error = lg + '(' + r + '!' + lg + ')' + rs
 success = w + '(' + lg + '+' + w + ')' + rs
 INPUT = lg + '(' + cy + '~' + lg + ')' + rs
 colors = [lg, w, r, cy]
-
 def banner():
     f = pyfiglet.Figlet(font='slant')
     logo = f.renderText('Genisys')
@@ -62,12 +55,8 @@ ind = int(input(f'\n{INPUT}{cy} Enter choice: '))
 api_id = accs[ind][0]
 api_hash = accs[ind][1]
 phone = accs[ind][2]
-client = TelegramClient(f'sessions/{phone}', api_id, api_hash)
+client = TelegramClient(f'sessions\\{phone}', api_id, api_hash)
 client.connect()
-#
-# sessions = client(GetAuthorizationsRequest())
-# print(sessions.stringify())
-
 if not client.is_user_authorized():
     try:
         client.send_code_request(phone)
@@ -77,7 +66,6 @@ if not client.is_user_authorized():
         print(f'{error}{w}{phone}{r} is banned!{rs}')
         print(f'{error}{lg} Run {w}manager.py{lg} to filter them{rs}')
         sys.exit()
-
 print(f'{info}{lg} Choose an option: ')
 print(f'({w}0{lg}) Scrape from public group')
 print(f'({w}1{lg}) Scrape from private group')
@@ -93,19 +81,18 @@ time = datetime.datetime.now().strftime("%H:%M")
 print('\n' + info + lg + ' Started at ' + rs + str(time))
 print(f'{info}{lg} Scraping members from {w}' + str(group.title))
 
-
 admins = client.get_participants(group, aggressive=True, filter=ChannelParticipantsAdmins)
 admins = list(map(lambda x: x.username,admins)) # get a list of the admins
 
 # Get (Members - Admins)
 members = []
 members = client.get_participants(group, aggressive=True)
-members = list(filter(lambda x: (x.username not in admins), members)) 
+members = list(filter(lambda x: (x.username not in admins), members))
+
 
 print(f'{info}{lg} Saving in {w}members.csv{rs}')
 select = str(input(f'{INPUT}{lg} Do you wanna filter active users?[y/n]: '))
-
-with open("members/members.csv", "w", encoding='UTF-8') as f:
+with open("members\\members.csv", "w", encoding='UTF-8') as f:
     writer = csv.writer(f, delimiter=",", lineterminator="\n")
     writer.writerow(['username', 'user id', 'access hash', 'group', 'group id'])
     if select == 'y':
@@ -136,4 +123,3 @@ with open('target_grp.txt', 'w') as f:
     f.write(target_grp)
 f.close()
 sys.exit()
-
